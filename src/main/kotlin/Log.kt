@@ -16,7 +16,7 @@ data class Log(var id : Int?, val searchFilter : String, val resultCount : Int, 
         }
     }
     override fun toString(): String {
-        return "$dateTime $id $searchFilter $resultCount"
+        return "$dateTime $id ${searchFilter.replace(" ", "-")} $resultCount"
     }
 
     fun getDate() : String{

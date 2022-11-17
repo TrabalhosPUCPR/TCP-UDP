@@ -17,4 +17,10 @@ object LogService : Service<Log>() {
         data.id = this.data.size
         file.appendText("$data\n")
     }
+
+    class Logger(private val log : Log) : Thread(){
+        override fun run() {
+            add(log)
+        }
+    }
 }

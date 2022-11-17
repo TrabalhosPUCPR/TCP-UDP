@@ -14,17 +14,15 @@ object StoresService : Service<Store>(){
             if(it.isNotEmpty()){
                 if(!it.startsWith(tabDelimiter)){
                     id = it.substringBefore(delimiter).toInt() - 1
-                    data.add(Store(data.size + 1, it.substringAfter(delimiter)))
+                    val values = it.split(" \"", "\" ")
+                    data.add(Store(values[0].toInt(), values[1], values[2].toInt()))
                 }else{
                     val entry = it.substringAfter(tabDelimiter)
                     val productId = entry.substringBefore(delimiter).toInt()-1
                     try{
-                        data[id].addProduct(
-                            ProductsService.data[productId], entry.substringAfter(
-                            delimiter
-                            ).toDouble())
+                        data[id].addProduct(ProductsService.data[productId], entry.substringAfter(delimiter).toDouble())
                     }catch (ignored : Exception){
-                        System.err.println("${data[id].name} - Error: product with Id=${productId + 1} does not exists - (Line: $line)")
+                        System.err.println("${data[id].storeName} - Error: product with Id=${productId + 1} does not exists - (Line: $line)")
                     }
                 }
                 line++
