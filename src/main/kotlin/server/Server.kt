@@ -63,31 +63,34 @@ class Server {
                         LogService.Logger(Log(filter, products.size, LogService.data.size)).start()
                         writeArray(socket, products)
                     }
-                }catch (_ : InterruptedException){
-                }
+                }catch (_ : InterruptedException){}
             }
             private class SearchStore(val filter : String, val store : Store) : Thread(){
                 var foundProducts = arrayListOf<Product>()
-                var done = false
                 override fun run() {
                     try {
                         attemptConnection(store.port, storeTLimit)?.let {
                             val socket = Socket("localhost", store.port)
+                            socket.soTimeout = storeTLimit;
                             DataOutputStream(socket.getOutputStream()).writeUTF(filter)
                             val input = ObjectInputStream(socket.getInputStream())
                             var product = input.readObject()
-                            while (product != 0 && !done){
+                            while (product != 0){
                                 foundProducts.add(product as Product)
                                 product = input.readObject()
                             }
-                            done = true
                         } ?: kotlin.run {
-                            done = false
-                            println("Could not connect to ${store.storeName}")
+                            timeOutMsg(store.storeName)
                         }
-                    }catch (_ : InterruptedException){
-                        println("${store.storeName} searcher interrupted")
+                    }catch (_ : Exception){
+                        timeOutMsg(store.storeName, extraMsg = "Attempting reconnect...")
                     }
+                }
+            }
+
+            companion object {
+                private fun timeOutMsg(storeName : String, extraMsg : String = ""){
+                    println("$storeName timed out! $extraMsg")
                 }
             }
         }
