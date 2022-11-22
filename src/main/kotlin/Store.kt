@@ -1,3 +1,4 @@
+import java.io.DataInput
 import java.io.DataInputStream
 import java.io.ObjectOutputStream
 import java.io.Serializable
@@ -28,7 +29,12 @@ data class Store(val id: Int, val storeName: String, val port : Int) : Serializa
 
         inner class Searcher(private val socket: Socket) : Thread(){
             override fun run() {
-                val filter = DataInputStream(socket.getInputStream()).readUTF()
+                var filter : CharSequence = ""
+                try{
+                    filter = DataInputStream(socket.getInputStream()).readUTF()
+                }catch (e : Exception){
+                    return // eof exception?
+                }
                 val output = ObjectOutputStream(socket.getOutputStream())
                 for(i in 0 until products.size){
                     if(products[i].name.lowercase().contains(filter)){

@@ -25,8 +25,8 @@ object StoresService : Service<Store>(){
                         System.err.println("${data[id].storeName} - Error: product with Id=${productId + 1} does not exists - (Line: $line)")
                     }
                 }
-                line++
             }
+            line++
         }
     }
     override fun add(data : Store) {
